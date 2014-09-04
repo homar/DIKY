@@ -21,7 +21,12 @@ describe('diky REST api server', function() {
 
   beforeEach(function(done) {
     db.collection('tests').drop();
-    done();
+    db.collection('tests').insert([
+        { from: "user1@foo.bar", about: "user2@foo.bar"},
+        { from: "user3@foo.bar", about: "user1@foo.bar"}
+      ], function (err, results) {
+        done();        
+      });
   });
 
   it('posts filled test', function(done) {
@@ -37,10 +42,11 @@ describe('diky REST api server', function() {
   });
 
   it('retrieves list of user tests', function(done) {
-    superagent.get('http://localhost:3000/users/1/tests')
+    superagent.get('http://localhost:3000/users/user1@foo.bar/tests')
       .end(function(err, res) {
         expect(err).to.eql(null);
         expect(res.body).to.be.an('array');
+        expect(res.body.map(function (element) { return element.from })).to.contain('user1@foo.bar', 'user2@foo.bar');
         done();
       });
   });
