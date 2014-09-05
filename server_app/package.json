@@ -12,5 +12,10 @@
     "expect.js": "0.3.x",
     "superagent": "0.17.x"
   },
-  "engine": "node >= 0.10.3"
+  "engine": "node >= 0.10.3",
+
+  "scripts": {
+    "test": "make test"
+  }
+    
 }
