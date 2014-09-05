@@ -5,7 +5,7 @@ module.exports = {
     },
 
     "logging": {
-      "file": "logs/api.log"
+      "file": "logs/api.log",
       "level": "error"
     }
   },
