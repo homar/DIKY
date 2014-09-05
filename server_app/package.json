@@ -5,7 +5,9 @@
   "dependencies": {
     "express": "4.8.x",
     "body-parser": "1.7.x",
-    "mongoskin": "1.4.x"
+    "mongoskin": "1.4.x",
+    "winston": "0.7.x",
+    "express-winston": "0.2.x"
   },
   "devDependencies": {
     "mocha": "1.18.x",
