@@ -1,4 +1,5 @@
 *.iml
+*.log
 target
 .idea
 .metadata
@@ -7,3 +8,4 @@ target
 .project
 gen
 libs
+bin

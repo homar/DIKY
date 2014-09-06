@@ -1,0 +1,23 @@
+{
+  "name": "diky-server",
+  "description": "diky-server",
+  "author": "Piotrek Janisz <piotrekjanisz@gmail.com>",
+  "dependencies": {
+    "express": "4.8.x",
+    "body-parser": "1.7.x",
+    "mongoskin": "1.4.x",
+    "winston": "0.7.x",
+    "express-winston": "0.2.x"
+  },
+  "devDependencies": {
+    "mocha": "1.18.x",
+    "expect.js": "0.3.x",
+    "superagent": "0.17.x"
+  },
+  "engine": "node >= 0.10.3",
+
+  "scripts": {
+    "test": "make test"
+  }
+    
+}
