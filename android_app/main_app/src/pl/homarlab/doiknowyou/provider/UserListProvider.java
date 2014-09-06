@@ -11,12 +11,16 @@ public class UserListProvider {
 	
 	public static Set<GraphUser> users = new HashSet<GraphUser>();
 	
-	public String[] getUserList(){
+	public static String[] getUserList(){
 		List<String> userList = new ArrayList<String>();
 		for(GraphUser user : users){
 			userList.add(user.getFirstName() + " " + user.getLastName());
 		}
 		return userList.toArray(new String[userList.size()]);
+	}
+	
+	public static int getNumberOfUsers(){
+		return users.size();
 	}
 	
 	public static void addUser(GraphUser graphUser){

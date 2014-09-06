@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
 
@@ -23,15 +24,19 @@ public class SelectFriendActivity extends ListActivity {
 		
 		Intent intent = getIntent();
 		source = intent.getStringExtra(MenuActivity.SOURCE);						    
-
+		
 	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 	        R.layout.activity_select_friend, R.id.label, 
-	        userListProvider.getUserList());
+	        UserListProvider.getUserList());
+	    
+	    TextView textView = new TextView(this);
+	    textView.setText("There are " + UserListProvider.getNumberOfUsers() + " different possibilities!");
+	    ListView listView = getListView();
+	    listView.addHeaderView(textView);
+	    
 	    setListAdapter(adapter);
-	    				
+	    
 	}
-
-	
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -41,8 +46,6 @@ public class SelectFriendActivity extends ListActivity {
 			setRedirectionToFillTest((String)l.getItemAtPosition(position));
 		}
 	}
-
-
 
 	private void setRedirectionToInviteFriend(String item) {
 		setTitle(INVITE_FRIEND);
