@@ -1,16 +1,10 @@
 package pl.homarlab.doiknowyou;
 
-import java.util.ArrayList;
-import java.util.List;
+import pl.homarlab.doiknowyou.provider.UserListProvider;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -20,6 +14,7 @@ public class SelectFriendActivity extends ListActivity {
 
 	private static final String INVITE_FRIEND = "Invite Friend";
 	private static final String FILL_TEST = "Fill test";
+	private UserListProvider userListProvider = new UserListProvider();
 	String source;
 	
 	@Override
@@ -27,16 +22,11 @@ public class SelectFriendActivity extends ListActivity {
 		super.onCreate(savedInstanceState);				
 		
 		Intent intent = getIntent();
-		source = intent.getStringExtra(MenuActivity.SOURCE);			
-		
-	    String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-	        "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-	        "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-	        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-	        "Android", "iPhone", "WindowsMobile" };
+		source = intent.getStringExtra(MenuActivity.SOURCE);						    
 
 	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-	        R.layout.activity_select_friend, R.id.label, values);
+	        R.layout.activity_select_friend, R.id.label, 
+	        userListProvider.getUserList());
 	    setListAdapter(adapter);
 	    				
 	}
