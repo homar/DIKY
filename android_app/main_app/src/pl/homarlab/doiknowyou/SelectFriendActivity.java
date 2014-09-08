@@ -1,5 +1,6 @@
 package pl.homarlab.doiknowyou;
 
+import pl.homarlab.doiknowyou.model.User;
 import pl.homarlab.doiknowyou.provider.UserListProvider;
 
 import android.app.ListActivity;
@@ -25,7 +26,7 @@ public class SelectFriendActivity extends ListActivity {
 		Intent intent = getIntent();
 		source = intent.getStringExtra(MenuActivity.SOURCE);						    
 		
-	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+	    ArrayAdapter<User> adapter = new ArrayAdapter<User>(this,
 	        R.layout.activity_select_friend, R.id.label, 
 	        UserListProvider.getUserList());
 	    
@@ -41,20 +42,20 @@ public class SelectFriendActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		if(source.equals(MenuActivity.INVITE_FRIEND)){
-			setRedirectionToInviteFriend((String)l.getItemAtPosition(position));
+			setRedirectionToInviteFriend((User)l.getItemAtPosition(position));
 		}else {
-			setRedirectionToFillTest((String)l.getItemAtPosition(position));
+			setRedirectionToFillTest((User)l.getItemAtPosition(position));
 		}
 	}
 
-	private void setRedirectionToInviteFriend(String item) {
+	private void setRedirectionToInviteFriend(User item) {
 		setTitle(INVITE_FRIEND);
 		Toast toast = Toast.makeText(this, "Invite Friends " + item, 3000);
 		toast.show();
 	}
 	
 
-	private void setRedirectionToFillTest(String item) {
+	private void setRedirectionToFillTest(User item) {
 		setTitle(FILL_TEST);
 		Toast toast = Toast.makeText(this, "Fill Test " + item, 3000);
 		toast.show();

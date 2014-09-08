@@ -1,24 +1,31 @@
 package pl.homarlab.doiknowyou.facebook;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import pl.homarlab.doiknowyou.R;
+import pl.homarlab.doiknowyou.model.User;
+import pl.homarlab.doiknowyou.provider.UserListProvider;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphMultiResult;
+import com.facebook.model.GraphObject;
+import com.facebook.model.GraphObjectList;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
-
-import pl.homarlab.doiknowyou.R;
-import pl.homarlab.doiknowyou.provider.UserListProvider;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 public class MainFragment extends Fragment{
 	
@@ -31,17 +38,6 @@ public class MainFragment extends Fragment{
 	    }
 	};
 		
-	private Request.GraphUserListCallback userListCallback = new Request.GraphUserListCallback() {		
-		
-		@Override
-		public void onCompleted(List<GraphUser> users, Response response) {
-			if(response.getError() == null) {
-				for(GraphUser graphUser : users){
-					UserListProvider.addUser(graphUser);
-				}
-			}		
-		}
-	};
 	private UiLifecycleHelper uiHelper;
 	
 	@Override
@@ -60,11 +56,46 @@ public class MainFragment extends Fragment{
 	        this.getView().findViewById(R.id.fillTestAboutFriend).setVisibility(View.VISIBLE);
 	        this.getView().findViewById(R.id.fillTestAboutYourself).setVisibility(View.VISIBLE);
 	        
-	        Request.newMyFriendsRequest(session, userListCallback);
+	        Request friendsRequest = createRequest(session);
+	        friendsRequest.setCallback(new Request.Callback() {
+				
+				@Override
+				public void onCompleted(Response response) {
+					List<GraphUser> friends = getResults(response);
+					for(GraphUser graphUser : friends){	
+						User user = new User((String)graphUser.getProperty("id"),
+								(String)graphUser.getProperty("name"));						
+						UserListProvider.addUser(user);
+					}
+				}
+			});
+	        friendsRequest.executeAsync();
 	    } else if (state.isClosed()) {
 	    	this.getView().findViewById(R.id.fillTestAboutFriend).setVisibility(View.GONE);
 	        this.getView().findViewById(R.id.fillTestAboutYourself).setVisibility(View.GONE);
 	    }
+	}
+	
+	private Request createRequest(Session session) {
+	    Request request = Request.newGraphPathRequest(session, "me/friends", null);
+
+	    Set<String> fields = new HashSet<String>();
+	    String[] requiredFields = new String[] {"name",
+	            "installed" };
+	    fields.addAll(Arrays.asList(requiredFields));
+
+	    Bundle parameters = request.getParameters();
+	    parameters.putString("fields", TextUtils.join(",", fields));
+	    request.setParameters(parameters);
+
+	    return request;
+	}
+	
+	private List<GraphUser> getResults(Response response) {
+	    GraphMultiResult multiResult = response
+	            .getGraphObjectAs(GraphMultiResult.class);
+	    GraphObjectList<GraphObject> data = multiResult.getData();
+	    return data.castToListOf(GraphUser.class);
 	}
 	
 	@Override
