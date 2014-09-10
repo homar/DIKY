@@ -1,7 +1,7 @@
 package pl.homarlab.doiknowyou;
 
 import pl.homarlab.doiknowyou.model.User;
-import pl.homarlab.doiknowyou.provider.UserListProvider;
+import pl.homarlab.doiknowyou.provider.FacebookDataProvider;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -14,9 +14,8 @@ import android.view.View;
 
 public class SelectFriendActivity extends ListActivity {
 
-	private static final String INVITE_FRIEND = "Invite Friend";
-	private static final String FILL_TEST = "Fill test";
-	private UserListProvider userListProvider = new UserListProvider();
+	public static final String USER_NAME = "USER_NAME";
+	public static final String USER_ID = "USER_ID";	
 	String source;
 	
 	@Override
@@ -28,10 +27,10 @@ public class SelectFriendActivity extends ListActivity {
 		
 	    ArrayAdapter<User> adapter = new ArrayAdapter<User>(this,
 	        R.layout.activity_select_friend, R.id.label, 
-	        UserListProvider.getUserList());
+	        FacebookDataProvider.getFriendsList());
 	    
 	    TextView textView = new TextView(this);
-	    textView.setText("There are " + UserListProvider.getNumberOfUsers() + " different possibilities!");
+	    textView.setText("There are " + FacebookDataProvider.getNumberOfFriends() + " different possibilities!");
 	    ListView listView = getListView();
 	    listView.addHeaderView(textView);
 	    
@@ -49,15 +48,17 @@ public class SelectFriendActivity extends ListActivity {
 	}
 
 	private void setRedirectionToInviteFriend(User item) {
-		setTitle(INVITE_FRIEND);
-		Toast toast = Toast.makeText(this, "Invite Friends " + item, 3000);
-		toast.show();
+		Intent intent = new Intent(this, SolveTestActivity.class);
+		intent.putExtra(USER_NAME, item.getName());
+		intent.putExtra(USER_ID, item.getId());
+		startActivity(intent);
 	}
 	
 
 	private void setRedirectionToFillTest(User item) {
-		setTitle(FILL_TEST);
-		Toast toast = Toast.makeText(this, "Fill Test " + item, 3000);
-		toast.show();
+		Intent intent = new Intent(this, SolveTestActivity.class);
+		intent.putExtra(USER_NAME, FacebookDataProvider.getLoginUserName());
+		intent.putExtra(USER_ID, FacebookDataProvider.getLoginUserId());
+		startActivity(intent);
 	}
 }

@@ -8,4 +8,7 @@
     <string name="button_invite_friend_to_fill_test_about_yourself">Invite a friend to fill the test about yourself</string>
     <string name="title_activity_select_friend">Select A Friend</string>
 	<string name="app_id">605777829540537</string>	
+	<string name="title_activity_solve_test">Solve the test!</string>
+	<string name="button_prev_question">Previous</string>
+	<string name="button_next_question">Next</string>	
 </resources>

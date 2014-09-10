@@ -7,7 +7,7 @@ import java.util.Set;
 
 import pl.homarlab.doiknowyou.R;
 import pl.homarlab.doiknowyou.model.User;
-import pl.homarlab.doiknowyou.provider.UserListProvider;
+import pl.homarlab.doiknowyou.provider.FacebookDataProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,6 +56,18 @@ public class MainFragment extends Fragment{
 	        this.getView().findViewById(R.id.fillTestAboutFriend).setVisibility(View.VISIBLE);
 	        this.getView().findViewById(R.id.fillTestAboutYourself).setVisibility(View.VISIBLE);
 	        
+	        Request.newMeRequest(session, new Request.GraphUserCallback() {
+
+	            // callback after Graph API response with user object
+	            @Override
+	            public void onCompleted(GraphUser user, Response response) {
+	              if (user != null) {
+	                FacebookDataProvider.setLoginUserName(user.getName());
+	                FacebookDataProvider.setLoginUserId(user.getId());	               
+	              }
+	            }
+	          }).executeAsync();
+	        
 	        Request friendsRequest = createRequest(session);
 	        friendsRequest.setCallback(new Request.Callback() {
 				
@@ -65,7 +77,7 @@ public class MainFragment extends Fragment{
 					for(GraphUser graphUser : friends){	
 						User user = new User((String)graphUser.getProperty("id"),
 								(String)graphUser.getProperty("name"));						
-						UserListProvider.addUser(user);
+						FacebookDataProvider.addFriend(user);
 					}
 				}
 			});

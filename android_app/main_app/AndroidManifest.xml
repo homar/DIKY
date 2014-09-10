@@ -24,8 +24,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="pl.homarlab.doiknowyou.SelectFriendActivity"
-            android:label="@string/title_activity_select_friend" >
+            android:name=".SelectFriendActivity"
+            android:label="@string/title_activity_select_friend" 
+            android:parentActivityName="pl.homarlab.doiknowyou.MenuActivity">
+            <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="pl.homarlab.doiknowyou.MenuActivity" />
+        </activity>
+        <activity
+            android:name=".SolveTestActivity"
+            android:label="@string/title_activity_solve_test" 
+            android:parentActivityName="pl.homarlab.doiknowyou.SelectFriendActivity">
+            <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="pl.homarlab.doiknowyou.SelectFriendActivity" />
         </activity>
         <meta-data android:value="@string/app_id" android:name="com.facebook.sdk.ApplicationId"/>
         <activity android:name="com.facebook.LoginActivity"></activity>
