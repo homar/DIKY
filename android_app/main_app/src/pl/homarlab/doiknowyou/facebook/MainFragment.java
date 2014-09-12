@@ -62,7 +62,7 @@ public class MainFragment extends Fragment{
 	            @Override
 	            public void onCompleted(GraphUser user, Response response) {
 	              if (user != null) {
-	                FacebookDataProvider.setLoginUserName(user.getName());
+	                FacebookDataProvider.setLoginUserName(user.getName());	                
 	                FacebookDataProvider.setLoginUserId(user.getId());	               
 	              }
 	            }
@@ -73,11 +73,13 @@ public class MainFragment extends Fragment{
 				
 				@Override
 				public void onCompleted(Response response) {
-					List<GraphUser> friends = getResults(response);
-					for(GraphUser graphUser : friends){	
-						User user = new User((String)graphUser.getProperty("id"),
-								(String)graphUser.getProperty("name"));						
-						FacebookDataProvider.addFriend(user);
+					if(response.getError() != null){
+						List<GraphUser> friends = getResults(response);
+						for(GraphUser graphUser : friends){	
+							User user = new User((String)graphUser.getProperty("id"),
+									(String)graphUser.getProperty("name"), (String)graphUser.getProperty("username"));						
+							FacebookDataProvider.addFriend(user);
+						}
 					}
 				}
 			});

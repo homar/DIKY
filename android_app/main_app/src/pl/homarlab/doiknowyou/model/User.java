@@ -3,10 +3,12 @@ package pl.homarlab.doiknowyou.model;
 public class User{
 	private String name;
 	private String id;
+	private String userName;
 	
-	public User(String id, String name) {
+	public User(String id, String name, String userName) {
 		this.id = id;
 		this.name = name;
+		this.setUserName(userName);
 	}
 	
 	public String getName() {
@@ -55,6 +57,14 @@ public class User{
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	
 	

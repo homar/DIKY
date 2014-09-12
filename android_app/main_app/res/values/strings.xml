@@ -11,4 +11,5 @@
 	<string name="title_activity_solve_test">Solve the test!</string>
 	<string name="button_prev_question">Previous</string>
 	<string name="button_next_question">Next</string>	
+	<string name="answerTextHint">Put your answer here!</string>
 </resources>

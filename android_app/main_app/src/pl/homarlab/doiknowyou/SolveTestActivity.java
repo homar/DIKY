@@ -6,7 +6,11 @@ import pl.homarlab.doiknowyou.provider.TestProvider;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class SolveTestActivity extends Activity{
@@ -23,9 +27,9 @@ public class SolveTestActivity extends Activity{
 	    String userId = intent.getStringExtra(SelectFriendActivity.USER_ID);
 	    test = testProvider.getTestForUser("D");
 	    
-	    Question firstQuestion = test.getCurrentQuestion();
-	    
+	    Question firstQuestion = test.getCurrentQuestion();	    
 	    setQuestion(firstQuestion);
+
 	}
 	
 	public void prevQuestion(View view){		
@@ -40,7 +44,7 @@ public class SolveTestActivity extends Activity{
 
 	private void setQuestion(Question question) {
 		TextView questionTextView = (TextView)findViewById(R.id.questionText);
-	    questionTextView.setText(question.getQuestion());
+	    questionTextView.setText(question.getText());
 	}
 	
 }
