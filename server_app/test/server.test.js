@@ -14,40 +14,70 @@ describe('diky REST api server', function() {
   })
 
 
-  after(function(done) {
-    if (db) db.close();
-    done();
-  });
 
   beforeEach(function(done) {
     db.collection('tests').drop();
     db.collection('tests').insert([
-        { from: "user1@foo.bar", about: "user2@foo.bar"},
-        { from: "user3@foo.bar", about: "user1@foo.bar"}
+        {
+          name: "test1",
+          description: "desc",
+          questions: [
+            {
+              number: "1",
+              type: "closed",
+              text: "question1",
+              options: ["opt1", "opt2"],
+            },
+            {
+              number: "2",
+              type: "open",
+              text: "question2",
+            }
+          ]
+        }
       ], function (err, results) {
-        done();        
+        done(); 
       });
   });
 
-  it('posts filled test', function(done) {
-    superagent.post('http://localhost:3000/tests')
-      .send({ from: "piotrekjanisz@gmail.com",
-        about: "konraddziedzic@gmail.com"})
-      .end(function(err, res) {
-        expect(err).to.eql(null);
-        expect(res.status).to.eql(200)
-        expect(res.body).to.only.have.keys('from', 'about', '_id');
-        done();
-      });
-  });
-
-  it('retrieves list of user tests', function(done) {
-    superagent.get('http://localhost:3000/users/user1@foo.bar/tests')
+  it('retrieves list of tests', function(done) {
+    superagent.get('http://localhost:3000/tests')
       .end(function(err, res) {
         expect(err).to.eql(null);
         expect(res.body).to.be.an('array');
-        expect(res.body.map(function (element) { return element.from })).to.contain('user1@foo.bar', 'user2@foo.bar');
+        expect(res.body.map(function (test) { return test.name })).to.contain('test1');
         done();
       });
+  });
+
+  it('retrieves test of a given name', function(done) {
+    superagent.get('http://localhost:3000/tests/test1')
+      .end(function(err, res) {
+        expect(err).to.eql(null);
+        expect(res.body).to.be.an('object');
+        expect(res.body.name).to.eql('test1');
+        done();
+      });
+  });
+
+  it('returns 404 when no test of given name', function(done) {
+    superagent.get('http://localhost:3000/tests/not_existing')
+      .end(function(err, res) {
+        expect(res.statusCode).to.eql(404);
+        console.log(res.body);
+        done();
+      });
+  });
+ 
+  afterEach(function(done) {
+    if (db) {
+      db.collection('tests').drop();
+      done();
+    }
+  });
+   
+  after(function(done) {
+    if (db) db.close();
+    done();
   });
 });
