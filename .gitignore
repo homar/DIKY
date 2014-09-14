@@ -1,5 +1,6 @@
 *.iml
 *.log
+*.swp
 target
 .idea
 .metadata

@@ -6,48 +6,160 @@ var config = require('../config/application.js')["development"];
 
 describe('diky REST api server', function() {
   var db;
+  var test_data;
 
   before(function(done) {
     server.start(3000);
     db = mongoskin.db(config.db.mongodb, {safe:true});
+    test_data = require('./test_data.js');
     done();
-  })
+  });
 
 
+
+  describe('/tests endpoint', function() {
+    beforeEach(function(done) {
+      db.collection('tests').drop();
+      db.collection('tests').insert(
+        test_data.tests,
+        function (err, results) {
+          done();
+        });
+    });
+
+    it('retrieves list of tests', function(done) {
+      superagent.get('http://localhost:3000/tests')
+        .end(function(err, res) {
+          expect(err).to.eql(null);
+          expect(res.body).to.be.an('array');
+          expect(res.body.map(function (test) { return test.name })).to.contain('test1');
+          done();
+        });
+    });
+
+    it('retrieves test of a given name', function(done) {
+      superagent.get('http://localhost:3000/tests/test1')
+        .end(function(err, res) {
+          expect(err).to.eql(null);
+          expect(res.body).to.be.an('object');
+          expect(res.body.name).to.eql('test1');
+          done();
+        });
+    });
+
+    it('returns 404 when no test of given name', function(done) {
+      superagent.get('http://localhost:3000/tests/not_existing')
+        .end(function(err, res) {
+          expect(res.statusCode).to.eql(404);
+          done();
+        });
+    });
+  });
+
+  describe('/fulfilments endpoint', function() {
+    var fulfilments;
+
+    before(function(done) {
+      fulfilments = require('../app/model/fulfilment.js').init(db);
+      done();
+    });
+
+    beforeEach(function(done) {
+      db.collection('fulfilments').drop();
+      db.collection('fulfilments').insert(
+        test_data.fulfilments,
+        function (err, results) {
+          done();
+        });
+    });
+    
+    it('retrieves all fulfilments', function(done) {
+      superagent.get('http://localhost:3000/fulfilments')
+        .end(function(err, res) {
+          expect(res.statusCode).to.eql(200);
+          expect(res.body).to.be.an('array');
+          done();
+        });
+    });
+
+    it('retrieves pending invitations for user', function(done) {
+      superagent.get('http://localhost:3000/fulfilments/pending/user2')
+        .end(function(err, res) {
+          expect(res.statusCode).to.eql(200);
+          expect(res.body).to.be.an('array');
+          expect(res.body.map(function(f) { return f.invitee.username})).to.only.contain('user2');
+          expect(res.body.map(function(f) { return f.invitee.answers ? 'defined' : 'undefined' })).to.only.contain('undefined');
+          done();
+        });
+    });
+
+    it('creates test fulfilment', function(done) {
+      superagent.post('http://localhost:3000/fulfilments')
+        .send(
+          {
+            test_id: "1",
+            initiator: {
+                username: "user3",
+                answers: [
+                  { question_number: "1", answer: "opt1" },
+                  { question_number: "2", answer: "user3 answer" }
+                ]
+            },
+
+            invitee: {
+              username: "user1"
+            }
+          }
+        )
+        .set('Content-Type', 'application/json')
+        .end(function(err, res) {
+          expect(res.statusCode).to.eql(200);
+          expect(res.body._id).to.be.ok();
+          done();
+        });
+    });
+
+    it('allows to submit test fulfilment', function(done) {
+      superagent.put('http://localhost:3000/fulfilments/2')
+        .send(
+          {
+            invitee: {
+              username: "user2",
+              answers: [
+                { question_number: "1", answer: "opt1" },
+                { question_number: "2", answer: "user2 answer" }
+              ]
+            }
+          }
+        )
+        .set('Content-Type', 'application/json')
+        .end(function(err, res) {
+          expect(res.statusCode).to.eql(200); 
+          fulfilments.findById("2", function(err, fulfilment) {
+            console.log(fulfilment);
+            expect(fulfilment.invitee.answers).to.be.an('array');
+            expect(fulfilment.invitee.username).to.eql('user2');
+            done();
+          });
+        });
+    });
+
+    it('gets tests about user', function(done) {
+      superagent.get('http://localhost:3000/fulfilments/about/user2')
+        .end(function(err, res) {
+          expect(res.statusCode).to.eql(200);
+          expect(res.body.map(function(f) {
+            if (f.initiator.username == 'user2' 
+              || f.invitee.username == 'user2') return 'about'
+            else return 'not_about_user2';
+          })).to.only.contain('about');
+          done();
+        });
+    });
+  });
+   
   after(function(done) {
     if (db) db.close();
     done();
-  });
-
-  beforeEach(function(done) {
-    db.collection('tests').drop();
-    db.collection('tests').insert([
-        { from: "user1@foo.bar", about: "user2@foo.bar"},
-        { from: "user3@foo.bar", about: "user1@foo.bar"}
-      ], function (err, results) {
-        done();        
-      });
-  });
-
-  it('posts filled test', function(done) {
-    superagent.post('http://localhost:3000/tests')
-      .send({ from: "piotrekjanisz@gmail.com",
-        about: "konraddziedzic@gmail.com"})
-      .end(function(err, res) {
-        expect(err).to.eql(null);
-        expect(res.status).to.eql(200)
-        expect(res.body).to.only.have.keys('from', 'about', '_id');
-        done();
-      });
-  });
-
-  it('retrieves list of user tests', function(done) {
-    superagent.get('http://localhost:3000/users/user1@foo.bar/tests')
-      .end(function(err, res) {
-        expect(err).to.eql(null);
-        expect(res.body).to.be.an('array');
-        expect(res.body.map(function (element) { return element.from })).to.contain('user1@foo.bar', 'user2@foo.bar');
-        done();
-      });
   });
 });
