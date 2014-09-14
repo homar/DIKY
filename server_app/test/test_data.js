@@ -21,6 +21,38 @@ module.exports = {
   ],
   
   fulfilments: [
-    "ala"   
+    {
+      _id: "1",
+      test_id: "1",
+      initiator: {
+        username: 'user1',
+        answers: [
+          { question_number: "1", answer: "opt1" },
+          { question_number: "2", answer: "answer1" },
+        ], 
+      },
+      invitee: {
+        username: 'user2',
+        answers: [
+          { question_number: "1", answer: "opt1" },
+          { question_number: "2", answer: "answer2" },
+        ],
+      },
+    },
+
+    {
+      _id: "2",
+      test_id: "1",
+      initiator: {
+        username: 'user3',
+        answers: [
+          { question_number: "1", answer: "opt1" },
+          { question_number: "2", answer: "answer1" },
+        ], 
+      },
+      invitee: {
+        username: 'user2',
+      },
+    },
   ] 
 }
