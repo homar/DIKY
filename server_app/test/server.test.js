@@ -6,10 +6,12 @@ var config = require('../config/application.js')["development"];
 
 describe('diky REST api server', function() {
   var db;
+  var test_data;
 
   before(function(done) {
     server.start(3000);
     db = mongoskin.db(config.db.mongodb, {safe:true});
+    test_data = require('./test_data.js');
     done();
   })
 
@@ -17,25 +19,9 @@ describe('diky REST api server', function() {
 
   beforeEach(function(done) {
     db.collection('tests').drop();
-    db.collection('tests').insert([
-        {
-          name: "test1",
-          description: "desc",
-          questions: [
-            {
-              number: "1",
-              type: "closed",
-              text: "question1",
-              options: ["opt1", "opt2"],
-            },
-            {
-              number: "2",
-              type: "open",
-              text: "question2",
-            }
-          ]
-        }
-      ], function (err, results) {
+    db.collection('tests').insert(
+      test_data.tests,
+      function (err, results) {
         done(); 
       });
   });
