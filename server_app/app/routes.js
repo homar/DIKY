@@ -6,7 +6,7 @@ function isEmptyObject(obj) {
 }
 
 module.exports = function(app) {
-  var config = require('../config/application.js')[app.settings.env];
+  var config = require('../config/application.js')
   var mongoskin = require('mongoskin');
   var db = mongoskin.db(config.db.mongodb, {safe:true});
   var tests = require('./model/test.js').init(db);

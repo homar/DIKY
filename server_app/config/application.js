@@ -1,4 +1,4 @@
-module.exports = {
+var config = {
   "development": {
     "db": {
       "mongodb": "mongodb://@localhost:27017/diky"
@@ -17,3 +17,6 @@ module.exports = {
     }
   }
 };
+
+var env = process.env.DIKY_ENV || "development"
+module.exports = config[env]

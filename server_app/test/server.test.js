@@ -2,7 +2,7 @@ var superagent = require('superagent');
 var mongoskin = require('mongoskin');
 var expect = require('expect.js');
 var server = require('../app/server.js');
-var config = require('../config/application.js')["development"];
+var config = require('../config/application.js')
 
 describe('diky REST api server', function() {
   var db;

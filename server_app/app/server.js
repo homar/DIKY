@@ -3,7 +3,9 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var app = express();
 
-var config = require('../config/application.js')[app.settings.env];
+process.env.DIKY_ENV = app.settings.env
+
+var config = require('../config/application.js')
 
 var bodyparser = require('body-parser');
 
