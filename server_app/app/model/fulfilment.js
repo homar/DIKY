@@ -1,39 +1,62 @@
-module.exports.init = function(db) {
-  db.bind('fulfilments').bind({
-    findAll: function(callback) {
-      this.find().toArray(callback);
-    },
+var mongoose = require('mongoose')
+var Schema = mongoose.Schema
 
-    getById: function(id, callback) {
-      this.findOne({_id: id}, callback);
-    },
+var FulfilmentSchema = new Schema({
+  _id: String,
+  test_id: {type: String, ref: 'Test'},
+  initiator: {
+    username: String,
+    answers: [{question_number: Number, answer: String}]
+  },
 
-    getPendingForUser: function(username, callback) {
-      var query = {
-        $and: [
-          {'invitee.username': username},
-          {'invitee.answers': {$exists: false}}
-        ]
-      };
+  invitee: {
+    username: String,
+    answers: [{question_number: Number, answer: String}]
+  }
+})
 
-      this.find(query).toArray(callback);
-    },
+var Fulfilment = mongoose.model('Fulfilment', FulfilmentSchema)
 
-    getAboutUser: function(username, callback) {
-      var query = {
-        $or: [
-          { 'invitee.username': username },
-          { 'initiator.username': username }
-        ]
-      };
-
-      this.find(query).toArray(callback);
-    },
-
-    updateById: function(id, value, callback) {
-      this.update({_id: id}, value, callback); 
-    }
-  });
-
-  return db.fulfilments;
+Fulfilment.createAll = function(fulfilments, callback) {
+  var toBeCreated = fulfilments.length
+  var errors = []
+  for(var i in fulfilments) {
+    var fulfilment = fulfilments[i]
+    this.create(fulfilment, function(err, f) {
+      if (err) err.push(err)
+      toBeCreated--
+      if (toBeCreated <= 0) {
+        callback(errors.length ? errors : null)
+      }
+    })
+  } 
 }
+
+Fulfilment.findAll = function(callback) {
+  this.find({}, null, callback)
+}
+
+Fulfilment.getPendingForUser = function(username, callback) {
+  this.find({
+      'invitee.username': username,
+      'invitee.answers': { $not: { $exists: true, $not: { $size: 0 } } }
+  }).exec(callback)
+}
+
+Fulfilment.getAboutUser = function(username, callback) {
+  var query = {
+    $or: [
+      { 'invitee.username': username },
+      { 'initiator.username': username }
+    ]
+  };
+
+  this.find(query).exec(callback) 
+},
+
+
+Fulfilment.updateById = function(id, value, callback) {
+  this.update({_id: id}, value, callback); 
+}
+
+module.exports = Fulfilment
