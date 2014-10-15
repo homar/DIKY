@@ -66,7 +66,6 @@ describe('diky REST api server', function() {
         if (err && err.length) {
           console.log(err)
         }
-
         done()
       })
     })
@@ -95,8 +94,7 @@ describe('diky REST api server', function() {
       superagent.post('http://localhost:3000/fulfilments')
         .send(
           {
-            _id: "3",
-            test_id: "1",
+            test_id: test_data.test1._id,
             initiator: {
                 username: "user3",
                 answers: [
@@ -119,7 +117,7 @@ describe('diky REST api server', function() {
     })
 
     it('allows to submit test fulfilment', function(done) {
-      superagent.put('http://localhost:3000/fulfilments/2')
+      superagent.put('http://localhost:3000/fulfilments/' + test_data.pending_fulfilment._id)
         .send(
           {
             invitee: {
@@ -134,7 +132,7 @@ describe('diky REST api server', function() {
         .set('Content-Type', 'application/json')
         .end(function(err, res) {
           expect(res.statusCode).to.eql(200) 
-          Fulfilment.findById("2", function(err, fulfilment) {
+          Fulfilment.findById(test_data.pending_fulfilment._id, function(err, fulfilment) {
             expect(fulfilment.invitee.answers).to.be.an('array')
             expect(fulfilment.invitee.username).to.eql('user2')
             done()

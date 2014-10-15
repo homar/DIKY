@@ -1,8 +1,8 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
+var ObjectId = mongoose.Types.ObjectId
 
 var FulfilmentSchema = new Schema({
-  _id: String,
   test_id: {type: String, ref: 'Test'},
   initiator: {
     username: String,
@@ -54,9 +54,8 @@ Fulfilment.getAboutUser = function(username, callback) {
   this.find(query).exec(callback) 
 },
 
-
 Fulfilment.updateById = function(id, value, callback) {
-  this.update({_id: id}, value, callback); 
+  this.update({_id: ObjectId(id)}, value, callback); 
 }
 
 module.exports = Fulfilment
