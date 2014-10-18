@@ -36,15 +36,21 @@ app.use(expressWinston.errorLogger({
 }))
 
 
-var routes = require('./routes.js')
-app.use('/', routes())
+app.use('/tests', require('./controllers/testController.js'))
+app.use('/fulfilments', require('./controllers/fulfilmentController.js'))
 
-function start(port) {
+
+var server = undefined
+
+exports.start = function(port) {
   mongoose.connect(config.db.mongodb)
 
   port = port || 3000
-  app.listen(3000)
+  server = app.listen(3000)
   logger.log("info", "DIKY server listening on port %d in %s mode", port, app.settings.env)
 }
 
-exports.start = start
+exports.stop = function() {
+  if (server) server.close()
+  mongoose.disconnect()
+}

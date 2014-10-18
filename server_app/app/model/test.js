@@ -23,7 +23,6 @@ Test.createAll = function(tests, callback) {
     this.create(test, function(err, small) {
       if (err) err.push(err)
       toBeCreated--
-      console.log(toBeCreated)
       if (toBeCreated <= 0) {
         callback(errors.length ? errors : null)
       }
